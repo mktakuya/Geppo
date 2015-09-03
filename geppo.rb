@@ -1,15 +1,22 @@
+require 'slop'
+require 'date'
 require 'open-uri'
 require 'nokogiri'
 
 class Geppo
   def run
-    entries = fetch_entries
+    opts = Slop.parse do |opt|
+      opt.integer '-y', '--year', 'Year', default: Date.today.year
+      opt.integer '-m', '--month', 'Month', default: Date.today.month
+    end
+
+    entries = fetch_entries(opts[:year], opts[:month])
     puts to_html(entries)
   end
 
   private
-  def fetch_entries
-    url = "http://mktakuya.hatenablog.jp/archive/2015/8"
+  def fetch_entries(year, month)
+    url = "http://mktakuya.hatenablog.jp/archive/#{year}/#{month}"
     doc = Nokogiri::HTML(open(url))
 
     archive_entries = doc.search('.archive-entries').first
