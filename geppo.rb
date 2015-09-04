@@ -1,5 +1,6 @@
 require 'slop'
 require 'date'
+require 'yaml'
 require 'open-uri'
 require 'nokogiri'
 
@@ -10,14 +11,15 @@ class Geppo
       opt.integer '-m', '--month', 'Month', default: Date.today.month
     end
 
-    entries = fetch_entries(opts[:year], opts[:month])
+    config = YAML.load_file('./config.yml')
+
+    entries = fetch_entries(config['url'], opts[:year], opts[:month])
     puts to_html(entries)
   end
 
   private
-  def fetch_entries(year, month)
-    url = "http://mktakuya.hatenablog.jp/archive/#{year}/#{month}"
-    doc = Nokogiri::HTML(open(url))
+  def fetch_entries(url, year, month)
+    doc = Nokogiri::HTML(open("#{url}/archive/#{year}/#{month}"))
 
     archive_entries = doc.search('.archive-entries').first
 
