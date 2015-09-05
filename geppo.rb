@@ -3,6 +3,7 @@ require 'date'
 require 'yaml'
 require 'open-uri'
 require 'nokogiri'
+require 'tilt'
 
 class Geppo
   def run
@@ -17,7 +18,6 @@ class Geppo
     puts to_html(entries)
   end
 
-  private
   def fetch_entries(url, year, month)
     doc = Nokogiri::HTML(open("#{url}/archive/#{year}/#{month}"))
 
@@ -36,26 +36,8 @@ class Geppo
   end
 
   def to_html(entries)
-    html = "<h3>タイムライン</h3>\n"
-
-    entries.reverse.each_with_index do |entry, i|
-      if i == 0 || entries[i - 1][:pub_date] != entry[:pub_date]
-        html += "<h4>#{entry[:pub_date].day.to_s}日（#{%w(日 月 火 水 木 金 土)[entry[:pub_date].wday]}）</h4>\n"
-        html += "<ul>\n"
-      end
-
-
-      html += "<li>"
-      html += "<a style=\"line-height: 1.5;\" href=\"#{entry[:link]}\">"
-      html += "#{entry[:title]}"
-      html += "</a>"
-      html += "</li>\n"
-
-      if entries[i + 1].nil? || entries[i + 1][:pub_date] != entry[:pub_date]
-        html += "</ul>\n"
-      end
-    end
-
+    template = Tilt.new('template.erb')
+    html = template.render(self, entries: entries)
     return html
   end
 end
