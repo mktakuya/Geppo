@@ -1,0 +1,15 @@
+<h3>タイムライン</h3>
+
+<% entries.reverse.each_with_index do |entry, i| %>
+<% if i == 0 || entries[i - 1][:pub_date] != entry[:pub_date] %>
+<h4><%= entry[:pub_date].day.to_s %>日（<%= %w(日 月 火 水 木 金 土)[entry[:pub_date].wday] %>）</h4>
+<ul>
+<% end %>
+<li>
+<a style="line-height: 1.5;" href="<%= entry[:link] %>"><%= entry[:title] %></a>
+</li>
+<% if entries[i + 1].nil? || entries[i + 1][:pub_date] != entry[:pub_date] %>
+</ul>
+<% end %>
+<% end %>
+
