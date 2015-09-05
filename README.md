@@ -9,6 +9,13 @@ cd Geppo
 bundle install
 ```
 
+## Config
+
+```
+cp config.yml.example config.yml
+# edit config file
+```
+
 ## Usage
 
 ```
